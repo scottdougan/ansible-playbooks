@@ -1,0 +1,6 @@
+---
+# Outergo groups list
+
+usergroups:
+  - sysadmin
+  - developer

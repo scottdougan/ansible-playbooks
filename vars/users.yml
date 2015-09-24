@@ -1,0 +1,21 @@
+---
+# Outergo user list
+
+users:
+  sysadmin:
+    - name: dougan
+      group: sysadmin
+      groups:
+        - developer
+        - sudo
+      authorized_keys:
+        - /files/keys/dougan_desktop.pub
+        - /files/keys/dougan_laptop.pub
+    - name: vermeulen
+      group: sysadmin
+      groups:
+        - developer
+        - sudo
+      authorized_keys:
+        - /files/keys/vermeulen_laptop.pub
+  

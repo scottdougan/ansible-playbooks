@@ -1,0 +1,57 @@
+---
+# Outergo 
+# Create new Linode 
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    - private_dir: ../../credentials/ansible
+  vars_files:
+    - vars/users.yml
+    - vars/groups.yml
+    - "{{ private_dir }}/linode.yml"
+    - "{{ private_dir }}/secrets.yml"
+
+  tasks:
+  - name: Create linode server
+    linode: 
+      api_key: "{{ linode.api_key }}"
+      name: new_outergo
+      plan: 1                   #Linode 1024
+      datacenter: 6             #Newark, NJ, USA
+      distribution: 139         #Ubuntu 15.04
+      password: "{{ linode.root_passwd }}"
+      ssh_pub_key: "{{ linode.pub_key }}"
+      wait: yes
+      wait_timeout: 300
+      state: present
+    register: linode
+
+  - name: Add the new linode to the dynamic inventory
+    add_host: hostname="{{ linode.instance.ipv4 }}" groupname=newLinode
+
+  - name: Wait for SSH to start
+    local_action: wait_for host="{{ linode.instance.ipv4 }}" port=22 delay=10 timeout=300 state=started
+
+
+# roles:
+#   - role: linode
+#     api_key: "{{ linode_env.api_key }}"
+#     root_passwd: "{{ linode_env.root_passwd }}"
+#     pub_key: "{{ linode_env.pub_key }}"
+
+# - name: Base configure
+#   hosts: newLinode
+#   user: root
+#   sudo: true
+#   gather_facts: true
+#   roles:
+#     - { role: users, tags: ['users'] }
+
+#- name: Cooking the instance....
+#  hosts: linodehosts
+#  user: root
+#  gather_facts: true
+#  roles:
+#    - base

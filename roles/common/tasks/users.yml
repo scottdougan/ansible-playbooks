@@ -1,0 +1,41 @@
+---
+- name: Creating user groups
+  group: name={{ item }} state=present
+  with_items:
+    - "{{ usergroups }}"
+
+- name: Add custom user groups
+  group: name={{ item.group | default(item.name) }} state=present
+  with_flattened:
+    - users.sysadmin
+
+- name: Creating users
+  user: 
+    name={{ item.name }}
+    group='{{ item.group | default(item.name) }}'
+    groups='{{ item.groups | default([]) | join(",") }}'
+    password="{{ secrets.default_password }}"
+    update_password=on_create
+    state=present
+    append=yes
+    shell=/bin/bash
+  with_flattened:
+    - users.sysadmin
+
+- name: List users who have the default password
+  shell: grep "{{ secrets.default_password  }}" /etc/shadow | cut -d':' -f1
+  register: users_with_def_passwd
+
+- name: Force user's with the default password to change
+  command: chage -d 0 {{ item }}
+  with_items: users_with_def_passwd.stdout_lines
+
+- name: Adding Authorized Keys
+  authorized_key: 
+    user={{ item.0.name }}
+    key="{{ lookup('file', inventory_dir + item.1) }}"
+  with_subelements:
+    - users.sysadmin
+    - authorized_keys
+# Added in Ansible 2.0
+#   - { skip_missing: true }

@@ -1,0 +1,15 @@
+---
+# Outergo base playbook
+
+- hosts: outergo-web
+  user: root
+  sudo: true
+  vars:
+    - private_dir: ../../credentials/ansible
+  vars_files:
+  - vars/users.yml
+  - vars/groups.yml
+  - "{{ private_dir }}/secrets.yml"
+
+  roles:
+    - common

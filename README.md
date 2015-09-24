@@ -1,0 +1,3 @@
+# Scott's Ansible playbooks
+
+This is not fully completed yet but it creates a new Linode and does some basic provisioning using [Ansible](http://www.ansible.com).  I tried doing the same kind of process using bash which I called [Linode Provisioner](https://github.com/scottdougan/linode-provisioner) but Ansible makes my life a lot easier with all of the built in features.  I'll update this readme with more information once I have a few roles completed. 
